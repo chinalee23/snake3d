@@ -1,3 +1,8 @@
 unity_project_snake3d/Library/*
 unity_project_snake3d/Temp/*
+unity_project_snake3d/.vs/*
+unity_project_snake3d/unity_project_snake3d.CSharp.csproj
+unity_project_snake3d/unity_project_snake3d.CSharp.Editor.csproj
+unity_project_snake3d/unity_project_snake3d.CSharp.Plugins.csproj
+unity_project_snake3d/unity_project_snake3d.sln
 *.swatch
