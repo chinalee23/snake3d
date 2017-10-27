@@ -6,3 +6,6 @@ unity_project_snake3d/unity_project_snake3d.CSharp.Editor.csproj
 unity_project_snake3d/unity_project_snake3d.CSharp.Plugins.csproj
 unity_project_snake3d/unity_project_snake3d.sln
 *.swatch
+reference/sketch/display_3.tif
+reference/sketch/display_1.tif
+reference/sketch/display_2.tif
