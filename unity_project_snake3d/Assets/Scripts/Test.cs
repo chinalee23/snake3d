@@ -2,24 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Direction {
+    None,
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+public enum PlaneType {
+    Up,
+    Down,
+    Left,
+    Right,
+    Front,
+    Back,
+}
+
 public class Test : MonoBehaviour {
-    enum Direction {
-        None,
-        Up,
-        Down,
-        Left,
-        Right,
-    }
+    
+    
     GameObject head;
     List<GameObject> bodys;
     GameObject tail;
     Direction currDirect;
     Direction newDirect;
+    PlaneType currPlane;
 
     float fixedInterval = 0.01f;
     int speed = 20;
     int interval = 0;
     Vector3 dest;
+
+    PlaneMove pMove;
+    Dictionary<PlaneType, PlaneMove> mapPlane;
 
     GameObject loadPrefab(string path, GameObject parent) {
         Object o = Resources.Load(path);
@@ -47,10 +63,17 @@ public class Test : MonoBehaviour {
         }
 
         currDirect = Direction.Left;
+        newDirect = currDirect;
+        currPlane = PlaneType.Down;
+
+        mapPlane = new Dictionary<PlaneType, PlaneMove>();
+        mapPlane[PlaneType.Down] = new PlaneDown();
+        mapPlane[PlaneType.Left] = new PlaneLeft();
+        mapPlane[PlaneType.Right] = new PlaneRight();
     }
 
     void initPosition() {
-        float x = 0.5f;
+        float x = 39.5f;
         float z = 0.5f;
         head.transform.localPosition = new Vector3(x, 0, z);
         for (int i = 0; i < bodys.Count; i++) {
@@ -59,6 +82,19 @@ public class Test : MonoBehaviour {
         }
         x += 1f;
         tail.transform.localPosition = new Vector3(x, 0, z);
+    }
+
+    void checkBound() {
+        Vector3 v = head.transform.localPosition;
+        if (v.x < -49.5 || v.x > 49.5) {
+            if (v.x < -49.5) {
+                
+            }
+        } else if (v.y < -49.5 || v.y > 49.5) {
+
+        } else if (v.z < -49.5 || v.z > 49.5) {
+
+        }
     }
 
     void updateInput() {
@@ -92,59 +128,36 @@ public class Test : MonoBehaviour {
         }
         interval = 0;
 
-        if (currDirect != newDirect) {
-            switch (newDirect) {
-                case Direction.Up:
-                    head.transform.localRotation = Quaternion.Euler(0, 90, 0);
-                    break;
-                case Direction.Down:
-                    head.transform.localRotation = Quaternion.Euler(0, 270, 0);
-                    break;
-                case Direction.Left:
-                    head.transform.localRotation = Quaternion.Euler(0, 0, 0);
-                    break;
-                case Direction.Right:
-                    head.transform.localRotation = Quaternion.Euler(0, 180, 0);
-                    break;
-            }
-            if (newDirect != Direction.None) {
-                currDirect = newDirect;
-            }
-        }
+        currDirect = newDirect;
 
-        Vector3 offset;
-        switch (currDirect) {
-            case Direction.Up:
-                offset = Vector3.forward;
-                break;
-            case Direction.Down:
-                offset = Vector3.back;
-                break;
-            case Direction.Left:
-                offset = Vector3.left;
-                break;
-            case Direction.Right:
-                offset = Vector3.right;
-                break;
-            default:
-                return;
-        }
         GameObject body = bodys[bodys.Count - 1];
         bodys.RemoveAt(bodys.Count - 1);
         tail.transform.localPosition = body.transform.localPosition;
-        body.transform.localPosition = head.transform.localPosition;
-        bodys.Insert(0, body);
-        head.transform.localPosition += offset;
+        tail.transform.localRotation = body.transform.localRotation;
 
-        offset = bodys[bodys.Count - 1].transform.localPosition - tail.transform.localPosition;
-        if (offset == Vector3.left) {
-            tail.transform.localRotation = Quaternion.Euler(0, 0, 0);
-        } else if (offset == Vector3.right) {
-            tail.transform.localRotation = Quaternion.Euler(0, 180, 0);
-        } else if (offset == Vector3.forward) {
-            tail.transform.localRotation = Quaternion.Euler(0, 90, 0);
-        } else if (offset == Vector3.back) {
-            tail.transform.localRotation = Quaternion.Euler(0, 270, 0);
+        body.transform.localPosition = head.transform.localPosition;
+        body.transform.localRotation = head.transform.localRotation;
+        bodys.Insert(0, body);
+
+        PlaneType newPlane = mapPlane[currPlane].Move(head.transform, ref currDirect);
+        if (newPlane != currPlane) {
+            mapPlane[newPlane].Rotate(head.transform, currDirect);
+            currPlane = newPlane;
+            newDirect = currDirect;
+        }
+    }
+
+    void updateHead() {
+        switch (currPlane) {
+            case PlaneType.Up:
+            case PlaneType.Down:
+                break;
+            case PlaneType.Left:
+            case PlaneType.Right:
+                break;
+            case PlaneType.Front:
+            case PlaneType.Back:
+                break;
         }
     }
 
