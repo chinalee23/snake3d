@@ -55,23 +55,26 @@ class PlaneDown : PlaneMove {
 
         Vector3 newPos = head.localPosition + offset;
         PlaneType newPlane = plane;
-        if (newPos.x < -49.5) {
+        if (newPos.x < -49.5f) {
             newPos.x = -50;
             newPos.y = 0.5f;
             head.localPosition = newPos;
             direction = Direction.Up;
             newPlane = PlaneType.Left;
-        } else if (newPos.x > 49.5) {
+        } else if (newPos.x > 49.5f) {
             newPos.x = 50;
             newPos.y = 0.5f;
             head.localPosition = newPos;
             direction = Direction.Up;
             newPlane = PlaneType.Right;
-        } else if (newPos.z < -49.5) {
+        } else if (newPos.z < -49.5f) {
             newPos.z = -50;
             return PlaneType.Back;
-        } else if (newPos.z > 49.5) {
+        } else if (newPos.z > 49.5f) {
             newPos.z = 50;
+            newPos.y = 0.5f;
+            head.localPosition = newPos;
+            newPlane = PlaneType.Front;
             return PlaneType.Front;
         } else {
             Rotate(head, direction);
@@ -125,15 +128,20 @@ class PlaneLeft : PlaneMove {
             newPos.y = 0;
             newPos.x = -49.5f;
             head.localPosition = newPos;
-            return PlaneType.Down;
+            direction = Direction.Right;
+            newPlane = PlaneType.Down;
         } else if (newPos.y > 100) {
             newPos.y = 100;
             return PlaneType.Up;
-        } else if (newPos.z < -49.5) {
+        } else if (newPos.z < -49.5f) {
             newPos.z = -50;
             return PlaneType.Back;
-        } else if (newPos.z > 49.5) {
+        } else if (newPos.z > 49.5f) {
             newPos.z = 50;
+            newPos.x = -49.5f;
+            head.localPosition = newPos;
+            direction = Direction.Right;
+            newPlane = PlaneType.Front;
             return PlaneType.Front;
         } else {
             Rotate(head, direction);
@@ -147,6 +155,7 @@ class PlaneRight : PlaneMove {
     public PlaneRight() {
         plane = PlaneType.Right;
     }
+
     public override void Rotate(Transform head, Direction direction) {
         switch (direction) {
             case Direction.Up:
@@ -183,20 +192,92 @@ class PlaneRight : PlaneMove {
 
         Vector3 newPos = head.localPosition + offset;
         PlaneType newPlane = plane;
-        if (newPos.y < 0.5) {
+        if (newPos.y < 0.5f) {
             newPos.y = 0;
-            newPos.x = -49.5f;
-            head.localRotation = Quaternion.Euler(0, 180, 0);
+            newPos.x = 49.5f;
             head.localPosition = newPos;
+            direction = Direction.Left;
+            newPlane = PlaneType.Down;
         } else if (newPos.y > 100) {
             newPos.y = 100;
             return PlaneType.Up;
-        } else if (newPos.z < -49.5) {
+        } else if (newPos.z < -49.5f) {
             newPos.z = -50;
             return PlaneType.Back;
-        } else if (newPos.z > 49.5) {
+        } else if (newPos.z > 49.5f) {
             newPos.z = 50;
+            newPos.x = 49.5f;
+            head.localPosition = newPos;
+            direction = Direction.Left;
+            newPlane = PlaneType.Front;
             return PlaneType.Front;
+        } else {
+            Rotate(head, direction);
+            head.localPosition = newPos;
+        }
+        return newPlane;
+    }
+}
+
+class PlaneFront : PlaneMove {
+    public PlaneFront() {
+        plane = PlaneType.Front;
+    }
+
+    public override void Rotate(Transform head, Direction direction) {
+        switch (direction) {
+            case Direction.Up:
+                head.localRotation = Quaternion.Euler(0, 90, -90);
+                break;
+            case Direction.Down:
+                head.localRotation = Quaternion.Euler(180, 90, -90);
+                break;
+            case Direction.Left:
+                head.localRotation = Quaternion.Euler(-90, 90, -90);
+                break;
+            case Direction.Right:
+                head.localRotation = Quaternion.Euler(90, 90, -90);
+                break;
+        }
+    }
+
+    public override PlaneType Move(Transform head, ref Direction direction) {
+        Vector3 offset = Vector3.zero;
+        switch (direction) {
+            case Direction.Up:
+                offset = Vector3.up;
+                break;
+            case Direction.Down:
+                offset = Vector3.down;
+                break;
+            case Direction.Left:
+                offset = Vector3.left;
+                break;
+            case Direction.Right:
+                offset = Vector3.right;
+                break;
+        }
+
+        Vector3 newPos = head.localPosition + offset;
+        PlaneType newPlane = plane;
+        if (newPos.y < 0.5f) {
+            newPos.y = 0;
+            newPos.z = 49.5f;
+            head.localPosition = newPos;
+            newPlane = PlaneType.Down;
+        } else if (newPos.y > 100) {
+            newPos.y = 100;
+            return PlaneType.Up;
+        } else if (newPos.x < -49.5f) {
+            newPos.x = -50f;
+            newPos.z = 49.5f;
+            head.localPosition = newPos;
+            newPlane = PlaneType.Left;
+        } else if (newPos.x > 49.5f) {
+            newPos.x = 50f;
+            newPos.z = 49.5f;
+            head.localPosition = newPos;
+            newPlane = PlaneType.Right;
         } else {
             Rotate(head, direction);
             head.localPosition = newPos;
