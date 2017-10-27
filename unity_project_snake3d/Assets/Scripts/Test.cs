@@ -20,8 +20,9 @@ public enum PlaneType {
 }
 
 public class Test : MonoBehaviour {
-    
-    
+
+    public GameObject Cam;
+
     GameObject head;
     List<GameObject> bodys;
     GameObject tail;
@@ -36,6 +37,8 @@ public class Test : MonoBehaviour {
 
     PlaneMove pMove;
     Dictionary<PlaneType, PlaneMove> mapPlane;
+
+    Vector3 camOffset;
 
     GameObject loadPrefab(string path, GameObject parent) {
         Object o = Resources.Load(path);
@@ -74,8 +77,8 @@ public class Test : MonoBehaviour {
     }
 
     void initPosition() {
-        float x = 39.5f;
-        float z = 39.5f;
+        float x = 0.5f;
+        float z = 0.5f;
         head.transform.localPosition = new Vector3(x, 0, z);
         for (int i = 0; i < bodys.Count; i++) {
             x += 1f;
@@ -122,6 +125,10 @@ public class Test : MonoBehaviour {
         
     }
 
+    void updateCamera() {
+        Cam.transform.localPosition = head.transform.localPosition + camOffset;
+    }
+
     void go() {
         interval++;
         if (interval < speed) {
@@ -166,12 +173,15 @@ public class Test : MonoBehaviour {
 	void Start () {
         init();
         initPosition();
+
+        camOffset = Cam.transform.localPosition;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         updateInput();
         updateSnake();
+        updateCamera();
 	}
 
     void FixedUpdate() {
