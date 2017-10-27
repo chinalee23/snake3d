@@ -22,6 +22,7 @@ public enum PlaneType {
 public class Test : MonoBehaviour {
 
     public GameObject Cam;
+    public float speed = 20;
 
     GameObject head;
     List<GameObject> bodys;
@@ -30,10 +31,8 @@ public class Test : MonoBehaviour {
     Direction newDirect;
     PlaneType currPlane;
 
-    float fixedInterval = 0.01f;
-    int speed = 20;
     int interval = 0;
-    Vector3 dest;
+    Vector3 dest = Vector3.zero;
 
     PlaneMove pMove;
     Dictionary<PlaneType, PlaneMove> mapPlane;
@@ -147,12 +146,12 @@ public class Test : MonoBehaviour {
         body.transform.localRotation = head.transform.localRotation;
         bodys.Insert(0, body);
 
-        PlaneType newPlane = mapPlane[currPlane].Move(head.transform, ref currDirect);
-        if (newPlane != currPlane) {
-            mapPlane[newPlane].Rotate(head.transform, currDirect);
-            currPlane = newPlane;
-            newDirect = currDirect;
-        }
+        currPlane = mapPlane[currPlane].Move(head.transform.localPosition, speed, ref currDirect, ref dest);
+        Vector3 angle = mapPlane[currPlane].Rotate(currDirect);
+        head.transform.localRotation = Quaternion.Euler(angle);
+        head.transform.localPosition = dest;
+
+        newDirect = currDirect;
     }
 
     void updateHead() {

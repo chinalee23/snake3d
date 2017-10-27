@@ -7,9 +7,9 @@ public class PlaneMove {
 
     protected virtual PlaneType move(Transform head, ref Direction direction) { return plane; }
 
-    public virtual void Rotate(Transform head, Direction direction) { }
+    public virtual Vector3 Rotate(Direction direction) { return Vector3.zero; }
 
-    public virtual PlaneType Move(Transform head, ref Direction direction) {
+    public virtual PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
         return plane;
     }
 }
@@ -19,24 +19,22 @@ class PlaneDown : PlaneMove {
         plane = PlaneType.Down;
     }
 
-    public override void Rotate(Transform head, Direction direction) {
+    public override Vector3 Rotate(Direction direction) {
         switch (direction) {
             case Direction.Up:
-                head.localRotation = Quaternion.Euler(0, 90, 0);
-                break;
+                return new Vector3(0, 90, 0);
             case Direction.Down:
-                head.localRotation = Quaternion.Euler(0, 270, 0);
-                break;
+                return new Vector3(0, 270, 0);
             case Direction.Left:
-                head.localRotation = Quaternion.Euler(0, 0, 0);
-                break;
+                return new Vector3(0, 0, 0);
             case Direction.Right:
-                head.localRotation = Quaternion.Euler(0, 180, 0);
-                break;
+                return new Vector3(0, 180, 0);
+            default:
+                return Vector3.zero;
         }
     }
 
-    public override PlaneType Move(Transform head, ref Direction direction) {
+    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:
@@ -53,18 +51,16 @@ class PlaneDown : PlaneMove {
                 break;
         }
 
-        Vector3 newPos = head.localPosition + offset;
+        Vector3 newPos = currPos + offset;
         PlaneType newPlane = plane;
         if (newPos.x < -49.5f) {
             newPos.x = -50;
             newPos.y = 0.5f;
-            head.localPosition = newPos;
             direction = Direction.Up;
             newPlane = PlaneType.Left;
         } else if (newPos.x > 49.5f) {
             newPos.x = 50;
             newPos.y = 0.5f;
-            head.localPosition = newPos;
             direction = Direction.Up;
             newPlane = PlaneType.Right;
         } else if (newPos.z < -49.5f) {
@@ -73,13 +69,10 @@ class PlaneDown : PlaneMove {
         } else if (newPos.z > 49.5f) {
             newPos.z = 50;
             newPos.y = 0.5f;
-            head.localPosition = newPos;
             newPlane = PlaneType.Front;
             return PlaneType.Front;
-        } else {
-            Rotate(head, direction);
-            head.localPosition = newPos;
         }
+        dest = newPos;
         return newPlane;
     }
 }
@@ -88,24 +81,22 @@ class PlaneLeft : PlaneMove {
     public PlaneLeft() {
         plane = PlaneType.Left;
     }
-    public override void Rotate(Transform head, Direction direction) {
+    public override Vector3 Rotate(Direction direction) {
         switch (direction) {
             case Direction.Up:
-                head.localRotation = Quaternion.Euler(0, 0, -90);
-                break;
+                return new Vector3(0, 0, -90);
             case Direction.Down:
-                head.localRotation = Quaternion.Euler(180, 0, -90);
-                break;
+                return new Vector3(180, 0, -90);
             case Direction.Left:
-                head.localRotation = Quaternion.Euler(-90, 0, -90);
-                break;
+                return new Vector3(-90, 0, -90);
             case Direction.Right:
-                head.localRotation = Quaternion.Euler(90, 0, -90);
-                break;
+                return new Vector3(90, 0, -90);
+            default:
+                return Vector3.zero;
         }
     }
 
-    public override PlaneType Move(Transform head, ref Direction direction) {
+    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:
@@ -122,12 +113,11 @@ class PlaneLeft : PlaneMove {
                 break;
         }
 
-        Vector3 newPos = head.localPosition + offset;
+        Vector3 newPos = currPos + offset;
         PlaneType newPlane = plane;
         if (newPos.y < 0.5) {
             newPos.y = 0;
             newPos.x = -49.5f;
-            head.localPosition = newPos;
             direction = Direction.Right;
             newPlane = PlaneType.Down;
         } else if (newPos.y > 100) {
@@ -139,14 +129,11 @@ class PlaneLeft : PlaneMove {
         } else if (newPos.z > 49.5f) {
             newPos.z = 50;
             newPos.x = -49.5f;
-            head.localPosition = newPos;
             direction = Direction.Right;
             newPlane = PlaneType.Front;
             return PlaneType.Front;
-        } else {
-            Rotate(head, direction);
-            head.localPosition = newPos;
         }
+        dest = newPos;
         return newPlane;
     }
 }
@@ -156,24 +143,22 @@ class PlaneRight : PlaneMove {
         plane = PlaneType.Right;
     }
 
-    public override void Rotate(Transform head, Direction direction) {
+    public override Vector3 Rotate(Direction direction) {
         switch (direction) {
             case Direction.Up:
-                head.localRotation = Quaternion.Euler(0, 180, -90);
-                break;
+                return new Vector3(0, 180, -90);
             case Direction.Down:
-                head.localRotation = Quaternion.Euler(180, 180, -90);
-                break;
+                return new Vector3(180, 180, -90);
             case Direction.Left:
-                head.localRotation = Quaternion.Euler(-90, 180, -90);
-                break;
+                return new Vector3(-90, 180, -90);
             case Direction.Right:
-                head.localRotation = Quaternion.Euler(90, 180, -90);
-                break;
+                return new Vector3(90, 180, -90);
+            default:
+                return Vector3.zero;
         }
     }
 
-    public override PlaneType Move(Transform head, ref Direction direction) {
+    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:
@@ -190,12 +175,11 @@ class PlaneRight : PlaneMove {
                 break;
         }
 
-        Vector3 newPos = head.localPosition + offset;
+        Vector3 newPos = currPos + offset;
         PlaneType newPlane = plane;
         if (newPos.y < 0.5f) {
             newPos.y = 0;
             newPos.x = 49.5f;
-            head.localPosition = newPos;
             direction = Direction.Left;
             newPlane = PlaneType.Down;
         } else if (newPos.y > 100) {
@@ -207,14 +191,11 @@ class PlaneRight : PlaneMove {
         } else if (newPos.z > 49.5f) {
             newPos.z = 50;
             newPos.x = 49.5f;
-            head.localPosition = newPos;
             direction = Direction.Left;
             newPlane = PlaneType.Front;
             return PlaneType.Front;
-        } else {
-            Rotate(head, direction);
-            head.localPosition = newPos;
         }
+        dest = newPos;
         return newPlane;
     }
 }
@@ -224,24 +205,22 @@ class PlaneFront : PlaneMove {
         plane = PlaneType.Front;
     }
 
-    public override void Rotate(Transform head, Direction direction) {
+    public override Vector3 Rotate(Direction direction) {
         switch (direction) {
             case Direction.Up:
-                head.localRotation = Quaternion.Euler(0, 90, -90);
-                break;
+                return new Vector3(0, 90, -90);
             case Direction.Down:
-                head.localRotation = Quaternion.Euler(180, 90, -90);
-                break;
+                return new Vector3(180, 90, -90);
             case Direction.Left:
-                head.localRotation = Quaternion.Euler(-90, 90, -90);
-                break;
+                return new Vector3(-90, 90, -90);
             case Direction.Right:
-                head.localRotation = Quaternion.Euler(90, 90, -90);
-                break;
+                return new Vector3(90, 90, -90);
+            default:
+                return Vector3.zero;
         }
     }
 
-    public override PlaneType Move(Transform head, ref Direction direction) {
+    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:
@@ -258,12 +237,11 @@ class PlaneFront : PlaneMove {
                 break;
         }
 
-        Vector3 newPos = head.localPosition + offset;
+        Vector3 newPos = currPos + offset;
         PlaneType newPlane = plane;
         if (newPos.y < 0.5f) {
             newPos.y = 0;
             newPos.z = 49.5f;
-            head.localPosition = newPos;
             newPlane = PlaneType.Down;
         } else if (newPos.y > 100) {
             newPos.y = 100;
@@ -271,17 +249,13 @@ class PlaneFront : PlaneMove {
         } else if (newPos.x < -49.5f) {
             newPos.x = -50f;
             newPos.z = 49.5f;
-            head.localPosition = newPos;
             newPlane = PlaneType.Left;
         } else if (newPos.x > 49.5f) {
             newPos.x = 50f;
             newPos.z = 49.5f;
-            head.localPosition = newPos;
             newPlane = PlaneType.Right;
-        } else {
-            Rotate(head, direction);
-            head.localPosition = newPos;
         }
+        dest = newPos;
         return newPlane;
     }
 }
