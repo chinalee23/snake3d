@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: cdcf91681e433cf44a8b1b3cdc35be55
-timeCreated: 1509537664
+guid: 5bc41fce6d9b6b6499b17d42d7af2fdd
+timeCreated: 1509544075
 licenseType: Pro
 ModelImporter:
   serializedVersion: 19
@@ -9,8 +9,7 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: polySurface1614
-    4300002: snake_body_test_01
+    4300000: snake_head_test_02
     9500000: //RootNode
   materials:
     importMaterials: 1
