@@ -54,15 +54,17 @@ public class Test : MonoBehaviour {
         return go;
     }
 
-    void init() {
-        bodys = new List<GameObject>();
+    GameObject clone(GameObject prefab, GameObject parent) {
+        GameObject go = MonoBehaviour.Instantiate<GameObject>(prefab);
+        go.transform.parent = parent.transform;
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localScale = Vector3.one;
+        go.SetActive(true);
+        return go;
+    }
 
-        head = loadPrefab("prefab/snake_head", gameObject);
-        tail = loadPrefab("prefab/snake_tail", gameObject);
-        for (int i = 0; i < 5; i++) {
-            GameObject body = loadPrefab("prefab/snake_body", gameObject);
-            bodys.Add(body);
-        }
+    void init() {
+        initSnake();
 
         currDirect = Direction.Left;
         newDirect = currDirect;
@@ -73,6 +75,17 @@ public class Test : MonoBehaviour {
         mapPlane[PlaneType.Left] = new PlaneLeft();
         mapPlane[PlaneType.Right] = new PlaneRight();
         mapPlane[PlaneType.Front] = new PlaneFront();
+    }
+
+    void initSnake() {
+        bodys = new List<GameObject>();
+        
+        head = clone(Config.Instance.PrefabHead, gameObject);
+        tail = clone(Config.Instance.PrefabTail, gameObject);
+        for (int i = 0; i < 5; i++) {
+            GameObject body = clone(Config.Instance.PrefabBody, gameObject);
+            bodys.Add(body);
+        }
     }
 
     void initPosition() {
