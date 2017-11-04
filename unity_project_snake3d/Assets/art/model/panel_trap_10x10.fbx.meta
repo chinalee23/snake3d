@@ -1,25 +1,15 @@
 fileFormatVersion: 2
-guid: 1bd7714846d64804d81a7efabb77fbb8
-timeCreated: 1509547678
+guid: 03dddad0106ecfd43ae17aff113e38da
+timeCreated: 1509808655
 licenseType: Pro
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: gear_button_01_part01
-    100004: gear_button_01_part02
     400000: //RootNode
-    400002: gear_button_01_part01
-    400004: gear_button_01_part02
     2300000: //RootNode
-    2300002: gear_button_01_part01
-    2300004: gear_button_01_part02
     3300000: //RootNode
-    3300002: gear_button_01_part01
-    3300004: gear_button_01_part02
-    4300000: gear_button_01
-    4300002: gear_button_01_part01
-    4300004: gear_button_01_part02
+    4300000: panel_trap_10x10
     9500000: //RootNode
   materials:
     importMaterials: 1
