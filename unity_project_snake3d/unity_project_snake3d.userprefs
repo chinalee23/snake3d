@@ -1,8 +1,9 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Test.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PlaneMove.cs">
     <Files>
       <File FileName="Assets\Scripts\Test.cs" Line="15" Column="10" />
+      <File FileName="Assets\Scripts\PlaneMove.cs" Line="37" Column="73" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
