@@ -90,7 +90,7 @@ public class Test : MonoBehaviour {
 
     void initPosition() {
         float x = 0.5f;
-        float z = 0.5f;
+        float z = 2.5f;
         head.transform.localPosition = new Vector3(x, 0, z);
         for (int i = 0; i < bodys.Count; i++) {
             x += 1f;
@@ -193,7 +193,7 @@ public class Test : MonoBehaviour {
 	void Update () {
         updateInput();
         updateSnake();
-        updateCamera();
+        //updateCamera();
 	}
 
     void FixedUpdate() {

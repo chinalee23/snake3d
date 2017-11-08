@@ -4,13 +4,21 @@ using UnityEngine;
 
 public class SnakePart {
     public GameObject go;
+
+    public Vector3 lastPos;
     public Vector3 targetPos;
-    public Vector3 targetRot;
+
+    public Vector3 lastAngle;
+    public Vector3 targetAngle;
 
     public SnakePart(GameObject g) {
         go = g;
+
+        lastPos = go.transform.localPosition;
         targetPos = go.transform.localPosition;
-        targetRot = Vector3.zero;
+
+        lastAngle = Vector3.zero;
+        targetAngle = Vector3.zero;
     }
 }
 
@@ -30,6 +38,8 @@ public class TestNew : MonoBehaviour {
     Dictionary<PlaneType, PlaneMove> mapPlane;
 
     Vector3 camOffset;
+
+    float lastFixedTime = -1f;
 
     GameObject loadPrefab(string path, GameObject parent) {
         Object o = Resources.Load(path);
@@ -81,7 +91,7 @@ public class TestNew : MonoBehaviour {
         head.transform.localPosition = pos;
         snake.Add(new SnakePart(head));
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             GameObject body = clone(Config.Instance.PrefabBody, gameObject);
             pos.x += 1f;
             body.transform.localPosition = pos;
@@ -128,10 +138,13 @@ public class TestNew : MonoBehaviour {
     }
 
     void updateSnake() {
+        if (lastFixedTime < 0) {
+            return;
+        }
         float time = Time.fixedDeltaTime * speed;
         for (int i = 0; i < snake.Count; i++) {
-            snake[i].go.transform.localPosition = Vector3.Lerp(snake[i].go.transform.localPosition, snake[i].targetPos, Time.deltaTime / time);
-            snake[i].go.transform.localRotation = Quaternion.Euler(Vector3.Lerp(snake[i].go.transform.localRotation.eulerAngles, snake[i].targetRot, Time.deltaTime / time));
+            snake[i].go.transform.localPosition = Vector3.Lerp(snake[i].lastPos, snake[i].targetPos, (Time.time - lastFixedTime)/time);
+            snake[i].go.transform.localRotation = Quaternion.Euler(Vector3.Lerp(snake[i].lastAngle, snake[i].targetAngle, (Time.time - lastFixedTime) / time));
         }
     }
 
@@ -146,20 +159,30 @@ public class TestNew : MonoBehaviour {
         }
         interval = 0;
 
-        currDirect = newDirect;
+        for (int i = 0; i < snake.Count; i++) {
+            snake[i].go.transform.localPosition = snake[i].targetPos;
+            snake[i].lastPos = snake[i].targetPos;
+            snake[i].go.transform.localRotation = Quaternion.Euler(snake[i].targetAngle);
+            snake[i].lastAngle = snake[i].targetAngle;
+        }
         
         Vector3 dest = Vector3.zero;
-        currPlane = mapPlane[currPlane].Move(snake[0].go.transform.localPosition, speed, ref currDirect, ref dest);
-        Vector3 angle = mapPlane[currPlane].Rotate(currDirect);
+        currPlane = mapPlane[currPlane].Move(snake[0].go.transform.localPosition, speed, ref newDirect, ref dest);
+        Vector3 angle = mapPlane[currPlane].Rotate(newDirect);
 
+        snake[0].lastPos = snake[0].go.transform.localPosition;
         snake[0].targetPos = dest;
-        snake[0].targetRot = angle;
+        snake[0].lastAngle = snake[0].go.transform.localRotation.eulerAngles;
+        snake[0].targetAngle = angle;
         for (int i = 1; i < snake.Count; i++) {
+            snake[i].lastPos = snake[i].go.transform.localPosition;
             snake[i].targetPos = snake[i - 1].go.transform.localPosition;
-            snake[i].targetRot = snake[i - 1].go.transform.localRotation.eulerAngles;
+            snake[i].lastAngle = snake[i].go.transform.localRotation.eulerAngles;
+            snake[i].targetAngle = snake[i - 1].go.transform.localRotation.eulerAngles;
         }
 
-        newDirect = currDirect;
+        lastFixedTime = Time.time;
+        currDirect = newDirect;
     }
 
     void updateHead() {
