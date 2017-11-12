@@ -160,8 +160,8 @@ public class Test : MonoBehaviour {
         bodys.Insert(0, body);
 
         currPlane = mapPlane[currPlane].Move(head.transform.localPosition, speed, ref currDirect, ref dest);
-        Vector3 angle = mapPlane[currPlane].Rotate(currDirect);
-        head.transform.localRotation = Quaternion.Euler(angle);
+        //Vector3 angle = mapPlane[currPlane].Rotate(currDirect);
+        //head.transform.localRotation = Quaternion.Euler(angle);
         head.transform.localPosition = dest;
 
         newDirect = currDirect;

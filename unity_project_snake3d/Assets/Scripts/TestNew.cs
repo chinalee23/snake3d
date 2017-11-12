@@ -8,7 +8,8 @@ public class SnakePart {
     public Vector3 lastPos;
     public Vector3 targetPos;
 
-    public Vector3 lastAngle;
+    public Vector3 lastRotateAngle;
+    public Vector3 targetRotateAngle;
     public Vector3 targetAngle;
 
     public SnakePart(GameObject g) {
@@ -16,8 +17,9 @@ public class SnakePart {
 
         lastPos = go.transform.localPosition;
         targetPos = go.transform.localPosition;
-
-        lastAngle = Vector3.zero;
+        
+        lastRotateAngle = Vector3.zero;
+        targetRotateAngle = Vector3.zero;
         targetAngle = Vector3.zero;
     }
 }
@@ -26,6 +28,7 @@ public class TestNew : MonoBehaviour {
 
     public GameObject Cam;
     public float speed = 20;
+    public int bodyCount = 10;
     
     List<SnakePart> snake;
     Direction currDirect;
@@ -85,19 +88,19 @@ public class TestNew : MonoBehaviour {
     }
 
     void initPosition() {
-        Vector3 pos = new Vector3(0.5f, 0, 0.5f);
+        Vector3 pos = new Vector3(-40.5f, 0, 0.5f);
 
         GameObject head = clone(Config.Instance.PrefabHead, gameObject);
         head.transform.localPosition = pos;
         snake.Add(new SnakePart(head));
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < bodyCount; i++) {
             GameObject body = clone(Config.Instance.PrefabBody, gameObject);
             pos.x += 1f;
             body.transform.localPosition = pos;
             snake.Add(new SnakePart(body));
         }
-        
+
         GameObject tail = clone(Config.Instance.PrefabTail, gameObject);
         pos.x += 1f;
         tail.transform.localPosition = pos;
@@ -144,7 +147,7 @@ public class TestNew : MonoBehaviour {
         float time = Time.fixedDeltaTime * speed;
         for (int i = 0; i < snake.Count; i++) {
             snake[i].go.transform.localPosition = Vector3.Lerp(snake[i].lastPos, snake[i].targetPos, (Time.time - lastFixedTime)/time);
-            snake[i].go.transform.localRotation = Quaternion.Euler(Vector3.Lerp(snake[i].lastAngle, snake[i].targetAngle, (Time.time - lastFixedTime) / time));
+            snake[i].go.transform.Rotate(snake[i].targetRotateAngle * (Time.deltaTime / time), Space.Self);
         }
     }
 
@@ -163,22 +166,26 @@ public class TestNew : MonoBehaviour {
             snake[i].go.transform.localPosition = snake[i].targetPos;
             snake[i].lastPos = snake[i].targetPos;
             snake[i].go.transform.localRotation = Quaternion.Euler(snake[i].targetAngle);
-            snake[i].lastAngle = snake[i].targetAngle;
+            snake[i].lastRotateAngle = snake[i].targetRotateAngle;
         }
         
         Vector3 dest = Vector3.zero;
-        currPlane = mapPlane[currPlane].Move(snake[0].go.transform.localPosition, speed, ref newDirect, ref dest);
-        Vector3 angle = mapPlane[currPlane].Rotate(newDirect);
-
-        snake[0].lastPos = snake[0].go.transform.localPosition;
+        PlaneType newPlane = mapPlane[currPlane].Move(snake[0].lastPos, speed, ref newDirect, ref dest);
+        Vector3 angle;
+        if (currPlane == newPlane) {
+            angle = mapPlane[currPlane].Rotate(currDirect, newDirect);
+        } else {
+            angle = mapPlane[newPlane].Enter();
+        }
+        currPlane = newPlane;
+        
         snake[0].targetPos = dest;
-        snake[0].lastAngle = snake[0].go.transform.localRotation.eulerAngles;
-        snake[0].targetAngle = angle;
+        snake[0].targetRotateAngle = angle;
+        snake[0].targetAngle = angle + snake[0].go.transform.localRotation.eulerAngles;
         for (int i = 1; i < snake.Count; i++) {
-            snake[i].lastPos = snake[i].go.transform.localPosition;
-            snake[i].targetPos = snake[i - 1].go.transform.localPosition;
-            snake[i].lastAngle = snake[i].go.transform.localRotation.eulerAngles;
-            snake[i].targetAngle = snake[i - 1].go.transform.localRotation.eulerAngles;
+            snake[i].targetPos = snake[i - 1].lastPos;
+            snake[i].targetRotateAngle = snake[i - 1].lastRotateAngle;
+            snake[i].targetAngle = snake[i].targetRotateAngle + snake[i].go.transform.localRotation.eulerAngles; ;
         }
 
         lastFixedTime = Time.time;
