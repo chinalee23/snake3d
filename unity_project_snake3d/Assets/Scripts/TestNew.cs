@@ -34,6 +34,17 @@ public class SnakePart {
         targetAngle = go.transform.localEulerAngles;
         go.transform.localRotation = old;
     }
+
+    public void Clone(SnakePart p) {
+        lastPos = p.lastPos;
+        targetPos = p.targetPos;
+        go.transform.localPosition = targetPos;
+
+        lastRotateAngle = p.lastRotateAngle;
+        targetRotateAngle = p.targetRotateAngle;
+        targetAngle = p.targetAngle;
+        go.transform.localEulerAngles = targetAngle;
+    }
 }
 
 public class TestNew : MonoBehaviour {
@@ -98,7 +109,7 @@ public class TestNew : MonoBehaviour {
     void initSnake() {
         snake = new List<SnakePart>();
 
-        Vector3 pos = new Vector3(45.5f, 0, 40.5f);
+        Vector3 pos = new Vector3(-16.5f, 0, -2.5f);
 
         GameObject head = clone(Config.Instance.PrefabHead, gameObject);
         head.transform.localPosition = pos;
@@ -166,7 +177,15 @@ public class TestNew : MonoBehaviour {
             snake[i].go.transform.localEulerAngles = snake[i].targetAngle;
             snake[i].lastRotateAngle = snake[i].targetRotateAngle;
         }
-        
+
+        bool eat = Foods.instance.Eat(snake[0].targetPos);
+        if (eat) {
+            GameObject body = clone(Config.Instance.PrefabBody, gameObject);
+            SnakePart part = new SnakePart(body);
+            part.Clone(snake[snake.Count - 2]);
+            snake.Insert(snake.Count - 1, part);
+        }
+
         Vector3 dest = Vector3.zero;
         PlaneType newPlane = mapPlane[currPlane].Move(snake[0].lastPos, ref newDirect, ref dest);
         snake[0].SetTargetPos(dest);
@@ -178,8 +197,9 @@ public class TestNew : MonoBehaviour {
         }
         snake[0].SetRotateAngle(angle);
         currPlane = newPlane;
-
-        for (int i = 1; i < snake.Count; i++) {
+        
+        int count = eat ? snake.Count - 2 : snake.Count;
+        for (int i = 1; i < count; i++) {
             snake[i].SetTargetPos(snake[i - 1].lastPos);
             snake[i].targetRotateAngle = snake[i - 1].lastRotateAngle;
             snake[i].targetAngle = snake[i - 1].go.transform.localEulerAngles;
