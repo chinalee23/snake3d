@@ -8,58 +8,18 @@ public class PlaneMove {
     protected virtual PlaneType move(Transform head, ref Direction direction) { return plane; }
 
     public Vector3 Rotate(Direction oldDirection, Direction newDirection) {
-        switch (oldDirection) {
-            case Direction.Up:
-                switch (newDirection) {
-                    case Direction.Up:
-                    case Direction.Down:
-                        break;
-                    case Direction.Left:
-                        return new Vector3(0, -90, 0);
-                    case Direction.Right:
-                        return new Vector3(0, 90, 0);
-                }
-                break;
-            case Direction.Down:
-                switch (newDirection) {
-                    case Direction.Up:
-                    case Direction.Down:
-                        break;
-                    case Direction.Left:
-                        return new Vector3(0, 90, 0);
-                    case Direction.Right:
-                        return new Vector3(0, -90, 0);
-                }
-                break;
-            case Direction.Left:
-                switch (newDirection) {
-                    case Direction.Left:
-                    case Direction.Right:
-                        break;
-                    case Direction.Up:
-                        return new Vector3(0, 90, 0);
-                    case Direction.Down:
-                        return new Vector3(0, -90, 0);
-                }
-                break;
-            case Direction.Right:
-                switch (newDirection) {
-                    case Direction.Left:
-                    case Direction.Right:
-                        break;
-                    case Direction.Up:
-                        return new Vector3(0, -90, 0);
-                    case Direction.Down:
-                        return new Vector3(0, 90, 0);
-                }
-                break;
+        if ((int)newDirection == ((int)oldDirection + 1) % 4) {
+            return new Vector3(0, -90, 0);
+        } else if ((int)newDirection == ((int)oldDirection + 3) % 4) {
+            return new Vector3(0, 90, 0);
+        } else {
+            return Vector3.zero;
         }
-        return Vector3.zero;
     }
 
-    public virtual Vector3 Enter() { return Vector3.zero; }
+    public virtual Vector3 Enter(PlaneType currPlane) { return new Vector3(0, 0, -90); }
 
-    public virtual PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
+    public virtual PlaneType Move(Vector3 currPos, ref Direction direction, ref Vector3 dest) {
         return plane;
     }
 }
@@ -69,7 +29,7 @@ class PlaneDown : PlaneMove {
         plane = PlaneType.Down;
     }
 
-    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
+    public override PlaneType Move(Vector3 currPos, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:
@@ -116,7 +76,7 @@ class PlaneLeft : PlaneMove {
         plane = PlaneType.Left;
     }    
 
-    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
+    public override PlaneType Move(Vector3 currPos, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:
@@ -162,7 +122,7 @@ class PlaneRight : PlaneMove {
         plane = PlaneType.Right;
     }
 
-    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
+    public override PlaneType Move(Vector3 currPos, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:
@@ -208,7 +168,7 @@ class PlaneFront : PlaneMove {
         plane = PlaneType.Front;
     }
 
-    public override PlaneType Move(Vector3 currPos, float speed, ref Direction direction, ref Vector3 dest) {
+    public override PlaneType Move(Vector3 currPos, ref Direction direction, ref Vector3 dest) {
         Vector3 offset = Vector3.zero;
         switch (direction) {
             case Direction.Up:

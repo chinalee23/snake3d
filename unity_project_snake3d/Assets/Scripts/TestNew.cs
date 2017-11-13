@@ -22,6 +22,18 @@ public class SnakePart {
         targetRotateAngle = Vector3.zero;
         targetAngle = Vector3.zero;
     }
+
+    public void SetTargetPos(Vector3 v) {
+        targetPos = v;
+    }
+
+    public void SetRotateAngle(Vector3 v) {
+        targetRotateAngle = v;
+        Quaternion old = go.transform.localRotation;
+        go.transform.Rotate(v);
+        targetAngle = go.transform.localEulerAngles;
+        go.transform.localRotation = old;
+    }
 }
 
 public class TestNew : MonoBehaviour {
@@ -85,38 +97,24 @@ public class TestNew : MonoBehaviour {
 
     void initSnake() {
         snake = new List<SnakePart>();
-    }
 
-    void initPosition() {
-        Vector3 pos = new Vector3(-40.5f, 0, 0.5f);
+        Vector3 pos = new Vector3(45.5f, 0, 40.5f);
 
         GameObject head = clone(Config.Instance.PrefabHead, gameObject);
         head.transform.localPosition = pos;
         snake.Add(new SnakePart(head));
 
-        for (int i = 0; i < bodyCount; i++) {
+        for (int i = 0; i < bodyCount - 1; i++) {
             GameObject body = clone(Config.Instance.PrefabBody, gameObject);
             pos.x += 1f;
             body.transform.localPosition = pos;
             snake.Add(new SnakePart(body));
         }
-
-        GameObject tail = clone(Config.Instance.PrefabTail, gameObject);
-        pos.x += 1f;
-        tail.transform.localPosition = pos;
-        snake.Add(new SnakePart(tail));
-    }
-
-    void checkBound() {
-        Vector3 v = snake[0].go.transform.localPosition;
-        if (v.x < -49.5 || v.x > 49.5) {
-            if (v.x < -49.5) {
-
-            }
-        } else if (v.y < -49.5 || v.y > 49.5) {
-
-        } else if (v.z < -49.5 || v.z > 49.5) {
-
+        if (bodyCount > 0) {
+            GameObject tail = clone(Config.Instance.PrefabTail, gameObject);
+            pos.x += 1f;
+            tail.transform.localPosition = pos;
+            snake.Add(new SnakePart(tail));
         }
     }
 
@@ -165,27 +163,26 @@ public class TestNew : MonoBehaviour {
         for (int i = 0; i < snake.Count; i++) {
             snake[i].go.transform.localPosition = snake[i].targetPos;
             snake[i].lastPos = snake[i].targetPos;
-            snake[i].go.transform.localRotation = Quaternion.Euler(snake[i].targetAngle);
+            snake[i].go.transform.localEulerAngles = snake[i].targetAngle;
             snake[i].lastRotateAngle = snake[i].targetRotateAngle;
         }
         
         Vector3 dest = Vector3.zero;
-        PlaneType newPlane = mapPlane[currPlane].Move(snake[0].lastPos, speed, ref newDirect, ref dest);
+        PlaneType newPlane = mapPlane[currPlane].Move(snake[0].lastPos, ref newDirect, ref dest);
+        snake[0].SetTargetPos(dest);
         Vector3 angle;
         if (currPlane == newPlane) {
             angle = mapPlane[currPlane].Rotate(currDirect, newDirect);
         } else {
-            angle = mapPlane[newPlane].Enter();
+            angle = mapPlane[newPlane].Enter(currPlane);
         }
+        snake[0].SetRotateAngle(angle);
         currPlane = newPlane;
-        
-        snake[0].targetPos = dest;
-        snake[0].targetRotateAngle = angle;
-        snake[0].targetAngle = angle + snake[0].go.transform.localRotation.eulerAngles;
+
         for (int i = 1; i < snake.Count; i++) {
-            snake[i].targetPos = snake[i - 1].lastPos;
+            snake[i].SetTargetPos(snake[i - 1].lastPos);
             snake[i].targetRotateAngle = snake[i - 1].lastRotateAngle;
-            snake[i].targetAngle = snake[i].targetRotateAngle + snake[i].go.transform.localRotation.eulerAngles; ;
+            snake[i].targetAngle = snake[i - 1].go.transform.localEulerAngles;
         }
 
         lastFixedTime = Time.time;
@@ -205,16 +202,12 @@ public class TestNew : MonoBehaviour {
                 break;
         }
     }
-
-    // Use this for initialization
+    
     void Start() {
         init();
-        initPosition();
-
         camOffset = Cam.transform.localPosition;
     }
-
-    // Update is called once per frame
+    
     void Update() {
         updateInput();
         updateSnake();

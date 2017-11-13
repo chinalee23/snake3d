@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum Direction {
-    None,
+    None = -1,
     Up,
-    Down,
     Left,
+    Down,
     Right,
 }
 
@@ -159,7 +159,7 @@ public class Test : MonoBehaviour {
         body.transform.localRotation = head.transform.localRotation;
         bodys.Insert(0, body);
 
-        currPlane = mapPlane[currPlane].Move(head.transform.localPosition, speed, ref currDirect, ref dest);
+        //currPlane = mapPlane[currPlane].Move(head.transform.localPosition, speed, ref currDirect, ref dest);
         //Vector3 angle = mapPlane[currPlane].Rotate(currDirect);
         //head.transform.localRotation = Quaternion.Euler(angle);
         head.transform.localPosition = dest;
