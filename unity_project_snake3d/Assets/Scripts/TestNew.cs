@@ -161,7 +161,7 @@ public class TestNew : MonoBehaviour {
     }
 
     void updateCamera() {
-        Cam.transform.localPosition = snake[0].go.transform.localPosition + camOffset;
+        Cam.transform.localPosition = snake[0].go.transform.position + camOffset;
     }
     
     void go() {
@@ -225,7 +225,8 @@ public class TestNew : MonoBehaviour {
     
     void Start() {
         init();
-        camOffset = Cam.transform.localPosition;
+        //camOffset = Cam.transform.position;
+        camOffset = Config.CameraConfig[currPlane];
     }
     
     void Update() {
