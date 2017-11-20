@@ -52,6 +52,7 @@ public class TestNew : MonoBehaviour {
     public GameObject Cam;
     public float speed = 20;
     public int bodyCount = 10;
+    public float highRatio = 0.1f;
     
     List<SnakePart> snake;
     Direction currDirect;
@@ -162,7 +163,8 @@ public class TestNew : MonoBehaviour {
     }
 
     void updateCamera() {
-        Cam.transform.localPosition = snake[0].go.transform.position + camOffset;
+        Vector3 offset = camOffset.normalized;
+        Cam.transform.localPosition = snake[0].go.transform.position + camOffset + offset * snake.Count * highRatio;
         Cam.transform.localEulerAngles = camAngle;
     }
     
