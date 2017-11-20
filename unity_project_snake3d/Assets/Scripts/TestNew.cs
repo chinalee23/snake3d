@@ -163,6 +163,7 @@ public class TestNew : MonoBehaviour {
 
     void updateCamera() {
         Cam.transform.localPosition = snake[0].go.transform.position + camOffset;
+        Cam.transform.localEulerAngles = camAngle;
     }
     
     void go() {

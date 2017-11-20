@@ -12,4 +12,8 @@ public class CameraConfig : MonoBehaviour {
     public void Clear() {
         Config.Clear();
     }
+
+    public void Load() {
+        Config.Load();
+    }
 }

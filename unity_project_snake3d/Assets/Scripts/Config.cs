@@ -65,4 +65,8 @@ public class Config : MonoBehaviour {
         using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.UTF8)) {
         }
     }
+
+    public static void Load() {
+        loadCameraConfig();
+    }
 }

@@ -15,5 +15,8 @@ public class CameraConfigEditor : Editor {
         if (GUILayout.Button("clear")) {
             cc.Clear();
         }
+        if (GUILayout.Button("reload")) {
+            cc.Load();
+        }
     }
 }
