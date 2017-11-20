@@ -6,6 +6,10 @@ public class CameraConfig : MonoBehaviour {
     public PlaneType pt;
 
     public void Save() {
-        Config.Save(pt, transform.position);
+        Config.Save(pt, transform.position, transform.localEulerAngles);
+    }
+
+    public void Clear() {
+        Config.Clear();
     }
 }

@@ -64,6 +64,7 @@ public class TestNew : MonoBehaviour {
     Dictionary<PlaneType, PlaneMove> mapPlane;
 
     Vector3 camOffset;
+    Vector3 camAngle;
 
     float lastFixedTime = -1f;
 
@@ -177,6 +178,7 @@ public class TestNew : MonoBehaviour {
             snake[i].go.transform.localEulerAngles = snake[i].targetAngle;
             snake[i].lastRotateAngle = snake[i].targetRotateAngle;
         }
+        updateCameraParam();
 
         bool eat = Foods.instance.Eat(snake[0].targetPos);
         if (eat) {
@@ -222,11 +224,15 @@ public class TestNew : MonoBehaviour {
                 break;
         }
     }
+
+    void updateCameraParam() {
+        camOffset = Config.CameraConfig[currPlane][0];
+        camAngle = Config.CameraConfig[currPlane][1];
+    }
     
     void Start() {
         init();
-        //camOffset = Cam.transform.position;
-        camOffset = Config.CameraConfig[currPlane];
+        updateCameraParam();
     }
     
     void Update() {
