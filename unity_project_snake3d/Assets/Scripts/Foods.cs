@@ -15,7 +15,7 @@ public class Foods : MonoBehaviour {
         }
     }
 
-    public static Foods instance;
+    public static Foods Instance;
 
     List<Grid> foods = new List<Grid>();
     List<GameObject> foods_go = new List<GameObject>();
@@ -32,7 +32,7 @@ public class Foods : MonoBehaviour {
     }
 
     void Awake() {
-        instance = this;
+        Instance = this;
     }
 
 	void Start () {

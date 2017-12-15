@@ -50,7 +50,7 @@ public class SnakePart {
 public class TestNew : MonoBehaviour {
 
     public GameObject Cam;
-    public float speed = 20;
+    public int speed = 20;
     public int bodyCount = 10;
     public float highRatio = 0.1f;
     
@@ -183,7 +183,7 @@ public class TestNew : MonoBehaviour {
         }
         updateCameraParam();
 
-        bool eat = Foods.instance.Eat(snake[0].targetPos);
+        bool eat = Foods.Instance.Eat(snake[0].targetPos);
         if (eat) {
             GameObject body = clone(Config.Instance.PrefabBody, gameObject);
             SnakePart part = new SnakePart(body);
