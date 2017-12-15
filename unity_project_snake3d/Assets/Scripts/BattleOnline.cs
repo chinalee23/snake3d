@@ -161,24 +161,15 @@ public class BattleOnline: Battle {
     }
 
     public override void Start() {
-        string path = Path.Combine(Application.persistentDataPath, "net.cfg");
-        Debug.Log("config path: " + path);
-        if (!File.Exists(path)) {
-            File.Create(path);
-            return;
-        }
+        NetSystem.Instance.Init("tcp");
 
-        string ip = "127.0.0.1";
-        int port = 12345;
-        using (StreamReader sr = new StreamReader(path)) {
-            string str = sr.ReadLine();
-            string[] seps = str.Trim().Split(',');
-            ip = seps[0].Trim();
-            port = int.Parse(seps[1].Trim());
+        if (Application.isEditor) {
+            string ip = "127.0.0.1";
+            int port = 12345;
+            NetSystem.Instance.Connect(ip, port, onConnect);
+        } else {
+            NetSystem.Instance.Connect(UIStart.Instance.Ip, UIStart.Instance.Port, onConnect);
         }
-
-            NetSystem.Instance.Init("tcp");
-        NetSystem.Instance.Connect(ip, port, onConnect);
     }
 
     public override void Update() {
