@@ -19,9 +19,11 @@ const (
 )
 
 type stSnake struct {
-	X   float32 `json:"x"`
-	Y   float32 `json:"y"`
-	Len float32 `json:"len"`
+	X     float32 `json:"x"`
+	Y     float32 `json:"y"`
+	Z     float32 `json:"z"`
+	Len   float32 `json:"len"`
+	Speed int     `json:"speed"`
 }
 
 type stBattleConfig struct {

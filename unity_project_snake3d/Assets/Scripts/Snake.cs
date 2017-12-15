@@ -35,8 +35,8 @@ public class SnakePart {
         go = g;
         trans = g.transform;
 
-        lastPos = go.transform.localPosition;
-        targetPos = go.transform.localPosition;
+        lastPos = go.transform.position;
+        targetPos = go.transform.position;
 
         lastRotateAngle = Vector3.zero;
         targetRotateAngle = Vector3.zero;
@@ -58,7 +58,7 @@ public class SnakePart {
     public void Copy(SnakePart p) {
         lastPos = p.lastPos;
         targetPos = p.targetPos;
-        go.transform.localPosition = targetPos;
+        go.transform.position = targetPos;
 
         lastRotateAngle = p.lastRotateAngle;
         targetRotateAngle = p.targetRotateAngle;
@@ -69,9 +69,11 @@ public class SnakePart {
 
 
 public class Snake {
-    public Snake(int id, GameObject root, Vector3 pos, int bodyCount) {
-        id_ = id;
-        dead = false;
+    public Snake(int id_, GameObject root, Vector3 pos, int bodyCount, int speed) {
+        id = id_;
+        Dead = false;
+
+        m_speed = speed;
 
         snake = new List<SnakePart>();
 
@@ -92,6 +94,7 @@ public class Snake {
         snake.Add(new SnakePart(tail));
 
         currDirect = Direction.Left;
+        newDirect = Direction.None;
 
         currPlane = PlaneType.Down;
         mapPlane = new Dictionary<PlaneType, PlaneMove>();
@@ -101,26 +104,26 @@ public class Snake {
         mapPlane[PlaneType.Front] = new PlaneFront();
     }
 
-    int id_;
+    public int id;
 
-    bool dead;
-    public bool Dead {
-        get {
-            return dead;
-        }
-    }
+    public bool Dead;
 
-    int speed = 5;
+    int m_speed = 5;
     int bodyCount = 10;
 
-    List<SnakePart> snake;
+    public List<SnakePart> snake {
+        get;
+        private set;
+    }
     Direction currDirect;
+    Direction newDirect;
     PlaneType currPlane;
 
     Vector3 camOffset;
     Vector3 camAngle;
 
-    int interval = 0;
+    int fixedUpdateInterval = 0;
+    int frameInterval = 0;
 
     PlaneMove pMove;
     Dictionary<PlaneType, PlaneMove> mapPlane;
@@ -149,9 +152,9 @@ public class Snake {
         if (lastFixedTime < 0) {
             return;
         }
-        float time = Time.fixedDeltaTime * speed;
+        float time = Time.fixedDeltaTime * m_speed;
         for (int i = 0; i < snake.Count; i++) {
-            snake[i].go.transform.localPosition = Vector3.Lerp(snake[i].lastPos, snake[i].targetPos, (Time.time - lastFixedTime) / time);
+            snake[i].go.transform.position = Vector3.Lerp(snake[i].lastPos, snake[i].targetPos, (Time.time - lastFixedTime) / time);
             snake[i].go.transform.Rotate(snake[i].targetRotateAngle * (Time.deltaTime / time), Space.Self);
         }
     }
@@ -163,7 +166,7 @@ public class Snake {
 
     void updateCamera() {
         Vector3 offset = camOffset.normalized;
-        Game.Instance.Camera.transform.localPosition = snake[0].go.transform.position + camOffset + offset * snake.Count * Game.Instance.CameraHighRatio;
+        Game.Instance.Camera.transform.position = snake[0].go.transform.position + camOffset + offset * snake.Count * Game.Instance.CameraHighRatio;
         Game.Instance.Camera.transform.localEulerAngles = camAngle;
     }
 
@@ -179,43 +182,29 @@ public class Snake {
         return flag;
     }
 
-    bool crash() {
-        Vector3 headPos = snake[0].targetPos;
-        for (int i = 1; i < snake.Count; i++) {
-            Vector3 offset = snake[i].targetPos - headPos;
-            if (Mathf.Approximately(offset.sqrMagnitude, 0)) {
-                dead = true;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public void Update() {
         updateSnake();
 
-        if (id_ == Game.Instance.playerId) {
+        if (id == Game.Instance.playerId) {
             updateCameraParam();
             updateCamera();
         }
     }
 
     public bool FixedUpdate() {
-        interval++;
-        if (interval < speed) {
+        fixedUpdateInterval++;
+        if (fixedUpdateInterval < m_speed) {
             return false;
         }
-        interval = 0;
+        fixedUpdateInterval = 0;
         return true;
     }
 
-    public void Go(Direction newDirect) {
-        interval++;
-        if (interval < speed) {
+    public void FixedData() {
+        frameInterval--;
+        if (frameInterval > 0) {
             return;
         }
-        interval = 0;
 
         for (int i = 0; i < snake.Count; i++) {
             snake[i].trans.position = snake[i].targetPos;
@@ -223,14 +212,32 @@ public class Snake {
             snake[i].trans.localEulerAngles = snake[i].targetAngle;
             snake[i].lastRotateAngle = snake[i].targetRotateAngle;
         }
+    }
 
-        if (crash()) {
+    public bool CrashSelf() {
+        Vector3 headPos = snake[0].targetPos;
+        for (int i = 1; i < snake.Count; i++) {
+            Vector3 offset = snake[i].targetPos - headPos;
+            if (Mathf.Approximately(offset.sqrMagnitude, 0)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void Go(Direction direct) {
+        if (direct != Direction.None) {
+            newDirect = direct;
+        }
+
+        if (frameInterval > 0) {
             return;
         }
 
         bool eatFlag = eat();
 
-        Direction direct = currDirect;
+        Direction oldirect = currDirect;
         setDirection(newDirect);
 
         Vector3 dest = Vector3.zero;
@@ -238,7 +245,7 @@ public class Snake {
         snake[0].SetTargetPos(dest);
         Vector3 angle;
         if (currPlane == newPlane) {
-            angle = mapPlane[currPlane].Rotate(direct, currDirect);
+            angle = mapPlane[currPlane].Rotate(oldirect, currDirect);
         } else {
             angle = mapPlane[newPlane].Enter(currPlane);
         }
@@ -253,5 +260,7 @@ public class Snake {
         }
 
         lastFixedTime = Time.time;
+
+        frameInterval = m_speed;
     }
 }

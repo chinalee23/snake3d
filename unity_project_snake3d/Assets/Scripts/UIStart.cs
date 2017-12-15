@@ -20,12 +20,16 @@ public class UIStart : MonoBehaviour {
     public Text TextRoom;
     public Text TextPlayerCount;
 
+    public GameObject GoCross;
+
     void Awake() {
         _instance = this;
     }
 
     // Use this for initialization
     void Start () {
+        GoCross.SetActive(false);
+
         BtnOnline.onClick.AddListener(delegate () {
             Game.Instance.StartBattle(true);
             RootStart.SetActive(false);
@@ -34,11 +38,12 @@ public class UIStart : MonoBehaviour {
 
         BtnOffline.onClick.AddListener(delegate () {
             Game.Instance.StartBattle(false);
-            gameObject.SetActive(false);
+            Disvisiable();
         });
 
         BtnStart.onClick.AddListener(delegate () {
-            Game.Instance.StartRoom();
+            BattleOnline battle = Game.Instance.GetBattle() as BattleOnline;
+            battle.StartRoom();
         });
 
         RootStart.SetActive(true);
@@ -57,5 +62,6 @@ public class UIStart : MonoBehaviour {
 
     public void Disvisiable() {
         gameObject.SetActive(false);
+        GoCross.SetActive(true);
     }
 }

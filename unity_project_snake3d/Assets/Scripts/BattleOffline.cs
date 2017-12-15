@@ -8,7 +8,7 @@ public class BattleOffline: Battle {
 
     public override void Start() {
         GameObject root = new GameObject("BattleRoot");
-        snake = new Snake(Game.Instance.playerId, root, new Vector3(0.5f, 0, 0.5f), 10);
+        snake = new Snake(Game.Instance.playerId, root, new Vector3(0.5f, 0, 0.5f), 10, 5);
     }
 
     public override void Update() {
@@ -18,15 +18,16 @@ public class BattleOffline: Battle {
 
         snake.Update();
 
-        if (Input.GetKey(KeyCode.W)) {
-            direct = Direction.Up;
-        } else if (Input.GetKey(KeyCode.S)) {
-            direct = Direction.Down;
-        } else if (Input.GetKey(KeyCode.A)) {
-            direct = Direction.Left;
-        } else if (Input.GetKey(KeyCode.D)) {
-            direct = Direction.Right;
-        }
+        direct = CrossOperator.Instance.direct;
+        //if (Input.GetKey(KeyCode.W)) {
+        //    direct = Direction.Up;
+        //} else if (Input.GetKey(KeyCode.S)) {
+        //    direct = Direction.Down;
+        //} else if (Input.GetKey(KeyCode.A)) {
+        //    direct = Direction.Left;
+        //} else if (Input.GetKey(KeyCode.D)) {
+        //    direct = Direction.Right;
+        //}
     }
 
     public override void FixedUpdate() {
@@ -34,7 +35,10 @@ public class BattleOffline: Battle {
             return;
         }
 
-        if (snake.FixedUpdate()) {
+        snake.FixedData();
+        if (snake.CrashSelf()) {
+            snake.Dead = true;
+        } else {
             snake.Go(direct);
         }
     }

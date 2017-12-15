@@ -40,6 +40,10 @@ public class Game : MonoBehaviour {
         NetSystem.Instance.Dispose();
     }
 
+    public Battle GetBattle() {
+        return battle;
+    }
+
     public void StartBattle(bool flag) {
         if (flag) {
             battle = new BattleOnline();
@@ -48,10 +52,6 @@ public class Game : MonoBehaviour {
             battle = new BattleOffline();
             battle.Start();
         }
-    }
-
-    public void StartRoom() {
-        (battle as BattleOnline).StartRoom();
     }
 
     public void ProcessMsg(int msgType, byte[] msg) {

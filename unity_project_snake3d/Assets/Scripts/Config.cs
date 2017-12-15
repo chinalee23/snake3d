@@ -20,10 +20,25 @@ public class Config : MonoBehaviour {
 
     static void loadCameraConfig() {
         CameraConfig = new Dictionary<PlaneType, Vector3[]>();
-        string path = Application.dataPath + "/../config/camera";
-        using (StreamReader sr = new StreamReader(path)) {
-            string s;
-            while ((s = sr.ReadLine()) != null) {
+        if (Application.isEditor) {
+            string path = Application.dataPath + "/../config/camera.txt";
+            using (StreamReader sr = new StreamReader(path)) {
+                string s;
+                while ((s = sr.ReadLine()) != null) {
+                    string[] seps = s.Split(',');
+                    int type = int.Parse(seps[0].Trim());
+                    string[] pos = seps[1].Trim().Split(' ');
+                    Vector3 cPos = new Vector3(float.Parse(pos[0]), float.Parse(pos[1]), float.Parse(pos[2]));
+                    string[] angle = seps[2].Trim().Split(' ');
+                    Vector3 cAngle = new Vector3(float.Parse(angle[0]), float.Parse(angle[1]), float.Parse(angle[2]));
+                    CameraConfig[(PlaneType)type] = new Vector3[] { cPos, cAngle };
+                }
+            }
+        } else {
+            TextAsset config = Resources.Load("config/camera") as TextAsset;
+            string[] lines = config.text.Split('\n');
+            for (int i = 0; i < lines.Length; i++) {
+                string s = lines[i];
                 string[] seps = s.Split(',');
                 int type = int.Parse(seps[0].Trim());
                 string[] pos = seps[1].Trim().Split(' ');
@@ -45,7 +60,7 @@ public class Config : MonoBehaviour {
         }
         CameraConfig[pt][0] = pos;
         CameraConfig[pt][1] = angle;
-        string path = Application.dataPath + "/../config/camera";
+        string path = Application.dataPath + "/../config/camera.txt";
         using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.UTF8)) {
             foreach (var kv in CameraConfig) {
                 string s = string.Format("{0}, {1} {2} {3}, {4} {5} {6}", (int)kv.Key, kv.Value[0].x, kv.Value[0].y, kv.Value[0].z, kv.Value[1].x, kv.Value[1].y, kv.Value[1].z);
@@ -61,7 +76,7 @@ public class Config : MonoBehaviour {
             CameraConfig.Clear();
         }
         
-        string path = Application.dataPath + "/../config/camera";
+        string path = Application.dataPath + "/../config/camera.txt";
         using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.UTF8)) {
         }
     }

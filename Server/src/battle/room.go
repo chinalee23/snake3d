@@ -28,7 +28,7 @@ type stBattleInfo struct {
 }
 
 type stFrames struct {
-	Frames []json.RawMessage `json: "frames"`
+	Frames []json.RawMessage `json:"frames"`
 }
 
 type stRoom struct {
