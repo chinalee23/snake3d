@@ -121,7 +121,7 @@ public class BattleOnline: Battle {
             if (mapOp.ContainsKey(kvp.Value.id)) {
                 direct = mapOp[kvp.Value.id];
             }
-            kvp.Value.Go(direct);
+            kvp.Value.Go(ref direct);
         }
     }
 

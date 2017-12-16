@@ -102,6 +102,9 @@ public class Snake {
         mapPlane[PlaneType.Left] = new PlaneLeft();
         mapPlane[PlaneType.Right] = new PlaneRight();
         mapPlane[PlaneType.Front] = new PlaneFront();
+
+        camOffset = Config.CameraConfig[currPlane][0];
+        camAngle = Config.CameraConfig[currPlane][1];
     }
 
     public int id;
@@ -164,9 +167,39 @@ public class Snake {
         camAngle = Config.CameraConfig[currPlane][1];
     }
 
-    void updateCamera() {
+    void updateCamera_() {
         Vector3 offset = camOffset.normalized;
         Game.Instance.Camera.transform.position = snake[0].go.transform.position + camOffset + offset * snake.Count * Game.Instance.CameraHighRatio;
+        Game.Instance.Camera.transform.localEulerAngles = camAngle;
+    }
+
+    float cameraFloatTime = -1f;
+    Vector3 cameraStartOffset;
+    Vector3 cameraStartAngle;
+    void updateCamera() {
+        Vector3 newOffset = Config.CameraConfig[currPlane][0];
+        Vector3 newAngle = Config.CameraConfig[currPlane][1];
+
+        Vector3 distOffset = newOffset - camOffset;
+        Vector3 distAngle = newAngle - camAngle;
+        if (!Mathf.Approximately(distOffset.sqrMagnitude, 0) || !Mathf.Approximately(distAngle.sqrMagnitude, 0)) {
+            if (cameraFloatTime < 0) {
+                cameraFloatTime = Time.time;
+                cameraStartOffset = camOffset;
+                cameraStartAngle = camAngle;
+            }
+            float ratio = (Time.time - cameraFloatTime) / 2f;
+            camOffset = Vector3.Lerp(cameraStartOffset, newOffset, ratio);
+            camAngle = Vector3.Lerp(cameraStartAngle, newAngle, ratio);
+        } else {
+            if (cameraFloatTime > 0) {
+                cameraFloatTime = -1f;
+                camOffset = newOffset;
+                camAngle = newAngle;
+            }
+        }
+
+        Game.Instance.Camera.transform.position = snake[0].go.transform.position + camOffset + camOffset.normalized * snake.Count * Game.Instance.CameraHighRatio;
         Game.Instance.Camera.transform.localEulerAngles = camAngle;
     }
 
@@ -186,7 +219,7 @@ public class Snake {
         updateSnake();
 
         if (id == Game.Instance.playerId) {
-            updateCameraParam();
+            //updateCameraParam();
             updateCamera();
         }
     }
@@ -226,7 +259,7 @@ public class Snake {
         return false;
     }
 
-    public void Go(Direction direct) {
+    public void Go(ref Direction direct) {
         if (direct != Direction.None) {
             newDirect = direct;
         }
@@ -234,6 +267,8 @@ public class Snake {
         if (frameInterval > 0) {
             return;
         }
+
+        direct = Direction.None;
 
         bool eatFlag = eat();
 
@@ -248,6 +283,7 @@ public class Snake {
             angle = mapPlane[currPlane].Rotate(oldirect, currDirect);
         } else {
             angle = mapPlane[newPlane].Enter(currPlane);
+            newDirect = currDirect;
         }
         snake[0].SetRotateAngle(angle);
         currPlane = newPlane;
