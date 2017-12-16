@@ -8,7 +8,7 @@ public class BattleOffline: Battle {
 
     public override void Start() {
         GameObject root = new GameObject("BattleRoot");
-        snake = new Snake(Game.Instance.playerId, root, new Vector3(0.5f, 0, 0.5f), 10, 3);
+        snake = new Snake(Game.Instance.playerId, root, new Vector3(-40.5f, 0, 0.5f), 10, 3);
     }
 
     public override void Update() {

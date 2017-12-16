@@ -11,6 +11,8 @@ public class Config : MonoBehaviour {
     public GameObject PrefabBody;
     public GameObject PrefabTail;
 
+    public float CameraSpeed;
+
     public static Dictionary<PlaneType, Vector3[]> CameraConfig;
 
 	void Awake() {
