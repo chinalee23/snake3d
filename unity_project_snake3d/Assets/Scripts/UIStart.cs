@@ -36,9 +36,11 @@ public class UIStart : MonoBehaviour {
         GoCross.SetActive(false);
 
         BtnOnline.onClick.AddListener(delegate () {
-            string[] seps = InputIp.text.Split(',');
-            Ip = seps[0].Trim();
-            Port = int.Parse(seps[1].Trim());
+            if (!Application.isEditor) {
+                string[] seps = InputIp.text.Split(',');
+                Ip = seps[0].Trim();
+                Port = int.Parse(seps[1].Trim());
+            }
 
             Game.Instance.StartBattle(true);
             RootStart.SetActive(false);

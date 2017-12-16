@@ -164,7 +164,7 @@ public class BattleOnline: Battle {
         NetSystem.Instance.Init("tcp");
 
         if (Application.isEditor) {
-            string ip = "127.0.0.1";
+            string ip = "192.168.0.196";
             int port = 12345;
             NetSystem.Instance.Connect(ip, port, onConnect);
         } else {
@@ -179,16 +179,16 @@ public class BattleOnline: Battle {
             return;
         }
 
-        //if (Input.GetKey(KeyCode.W)) {
-        //    direct = Direction.Up;
-        //} else if (Input.GetKey(KeyCode.S)) {
-        //    direct = Direction.Down;
-        //} else if (Input.GetKey(KeyCode.A)) {
-        //    direct = Direction.Left;
-        //} else if (Input.GetKey(KeyCode.D)) {
-        //    direct = Direction.Right;
-        //}
-        direct = CrossOperator.Instance.direct;
+        if (Input.GetKey(KeyCode.W)) {
+            direct = Direction.Up;
+        } else if (Input.GetKey(KeyCode.S)) {
+            direct = Direction.Down;
+        } else if (Input.GetKey(KeyCode.A)) {
+            direct = Direction.Left;
+        } else if (Input.GetKey(KeyCode.D)) {
+            direct = Direction.Right;
+        }
+        //direct = CrossOperator.Instance.direct;
 
         foreach (var kvp in snakes) {
             if (!kvp.Value.Dead) {
@@ -201,10 +201,10 @@ public class BattleOnline: Battle {
         if (!started) {
             return;
         }
-        Snake mine = snakes[Game.Instance.playerId];
-        if (!mine.FixedUpdate()) {
-            return;
-        }
+        //Snake mine = snakes[Game.Instance.playerId];
+        //if (!mine.FixedUpdate()) {
+        //    return;
+        //}
 
         if (direct != Direction.None) {
             string js = "{\"id\":" + Game.Instance.playerId + ", \"direct\":" + (int)direct + "}";
